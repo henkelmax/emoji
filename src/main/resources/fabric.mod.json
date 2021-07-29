@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "emoji",
+  "version": "${version}",
+  "name": "Emoji",
+  "description": "Emoji",
+  "authors": [
+    "Max Henkel"
+  ],
+  "contact": {
+    "website": "https://modrepo.de"
+  },
+  "license": "All Rights Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "de.maxhenkel.emoji.Emoji"
+    ]
+  },
+  "mixins": [
+    "emoji.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": ">=${fabric_version}",
+    "minecraft": "${minecraft_dependency}",
+    "java": ">=16"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "de.maxhenkel.emoji.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "FontMixin",
+    "FontSetMixin",
+    "ScreenMixin",
+    "GameRendererMixin",
+    "EditBoxMixin",
+    "KeyboardHandlerMixin",
+    "MouseHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
