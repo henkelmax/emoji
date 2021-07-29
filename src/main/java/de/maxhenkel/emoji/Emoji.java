@@ -21,4 +21,9 @@ public class Emoji implements ClientModInitializer {
         Minecraft mc = Minecraft.getInstance();
         ConfigBuilder.create(mc.gameDirectory.toPath().resolve("config").resolve(MODID).resolve("emoji.properties"), builder -> CLIENT_CONFIG = new ClientConfig(builder));
     }
+
+    public static boolean isEmoji(int character) {
+        return character > 1_000_000;
+    }
+
 }

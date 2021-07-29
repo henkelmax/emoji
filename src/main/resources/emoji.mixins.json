@@ -12,7 +12,9 @@
     "GameRendererMixin",
     "EditBoxMixin",
     "KeyboardHandlerMixin",
-    "MouseHandlerMixin"
+    "MouseHandlerMixin",
+    "SignEditScreenMixin",
+    "StringRenderOutputMixin"
   ],
   "injectors": {
     "defaultRequire": 1

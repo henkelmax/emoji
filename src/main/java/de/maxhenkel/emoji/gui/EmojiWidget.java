@@ -5,11 +5,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import de.maxhenkel.emoji.Emoji;
-import de.maxhenkel.emoji.interfaces.IEditBox;
 import de.maxhenkel.emoji.interfaces.IFont;
 import de.maxhenkel.emoji.interfaces.IFontSet;
+import de.maxhenkel.emoji.interfaces.ITextField;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -25,7 +24,7 @@ public class EmojiWidget {
 
     public static final ResourceLocation CLOSE = new ResourceLocation(Emoji.MODID, "textures/close.png");
 
-    private EditBox editBox;
+    private ITextField textField;
     private int rows, cols;
     private int fontSize;
     private int squareSize;
@@ -42,8 +41,8 @@ public class EmojiWidget {
     private double grabX, grabY;
     private Runnable onClose;
 
-    public EmojiWidget(EditBox editBox, int rows, int cols, Runnable onClose) {
-        this.editBox = editBox;
+    public EmojiWidget(ITextField textField, int rows, int cols, Runnable onClose) {
+        this.textField = textField;
         this.minecraft = Minecraft.getInstance();
         this.fontSize = minecraft.font.lineHeight;
         this.squareSize = fontSize + 2;
@@ -145,8 +144,8 @@ public class EmojiWidget {
             int slotX = posX + 1 + col * (squareSize + 1);
             int slotY = posY + bar.getHeight() + 1 + row * (squareSize + 1);
             if (isHovered(slotX, slotY, squareSize, squareSize, (int) x, (int) y)) {
-                if (((IEditBox) editBox).canEdit()) {
-                    editBox.insertText(emoji);
+                if (textField.canEdit()) {
+                    textField.addText(emoji);
                     return true;
                 }
                 break;

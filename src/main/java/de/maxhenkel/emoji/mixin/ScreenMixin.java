@@ -1,8 +1,11 @@
 package de.maxhenkel.emoji.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import de.maxhenkel.emoji.gui.EditBoxTextField;
 import de.maxhenkel.emoji.gui.EmojiWidget;
+import de.maxhenkel.emoji.gui.SignTextField;
 import de.maxhenkel.emoji.interfaces.IScreen;
+import de.maxhenkel.emoji.interfaces.ITextField;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
@@ -10,6 +13,7 @@ import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.SignEditScreen;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -51,9 +55,9 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
     @Override
     public boolean preKeyPressed(int key, int scanCode, int modifiers) {
         if (key == GLFW.GLFW_KEY_PERIOD && (modifiers & GLFW.GLFW_MOD_CONTROL) != 0) {
-            EditBox editBox = getActiveEditBox();
-            if (editBox != null) {
-                openWidget(editBox);
+            ITextField textField = getActiveTextField();
+            if (textField != null) {
+                openWidget(textField);
                 return true;
             }
         }
@@ -63,13 +67,13 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
         return false;
     }
 
-    public void openWidget(EditBox editBox) {
-        widget = new EmojiWidget(editBox, 5, 9, () -> widget = null);
+    public void openWidget(ITextField textField) {
+        widget = new EmojiWidget(textField, 5, 9, () -> widget = null);
         int screenWidth = minecraft.getWindow().getGuiScaledWidth();
         int screenHeight = minecraft.getWindow().getGuiScaledHeight();
 
-        int x = editBox.x + editBox.getWidth();
-        int y = editBox.y + editBox.getHeight();
+        int x = textField.getPosX() + textField.getWidth();
+        int y = textField.getPosY() + textField.getHeight();
 
         if (x + widget.getWidth() > screenWidth) {
             x = screenWidth - widget.getWidth();
@@ -83,13 +87,17 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
     }
 
     @Nullable
-    public EditBox getActiveEditBox() {
+    public ITextField getActiveTextField() {
+        if ((Object) this instanceof SignEditScreen sign) {
+            return new SignTextField(sign);
+        }
+
         return children
                 .stream()
                 .filter(EditBox.class::isInstance)
                 .map(EditBox.class::cast)
                 .filter(AbstractWidget::isFocused)
-                .findFirst().orElse(null);
+                .findFirst().map(EditBoxTextField::new).orElse(null);
     }
 
     @Override
