@@ -87,7 +87,7 @@ public class EmojiWidget {
             }
             int width = minecraft.font.width(emoji);
             int offsetX = (minecraft.font.lineHeight - width) / 2;
-            minecraft.font.draw(poseStack, emoji, posX + 2 + offsetX + col * (squareSize + 1), posY + bar.getHeight() + 2 + row * (squareSize + 1), 0xFFFFFF);
+            minecraft.font.draw(poseStack, emoji, posX + 2 + offsetX + col * (squareSize + 1), posY + bar.getHeight() + 3 + row * (squareSize + 1), 0xFFFFFF);
         }
 
         float percScroll = (float) offset / (float) Math.max(getTotalRowCount() - rows, 1);
