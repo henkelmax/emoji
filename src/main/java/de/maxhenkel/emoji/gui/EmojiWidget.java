@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import de.maxhenkel.emoji.Emoji;
+import de.maxhenkel.emoji.config.EmojiHistory;
 import de.maxhenkel.emoji.interfaces.IFont;
 import de.maxhenkel.emoji.interfaces.IFontSet;
 import de.maxhenkel.emoji.interfaces.ITextField;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class EmojiWidget {
 
     public static final ResourceLocation CLOSE = new ResourceLocation(Emoji.MODID, "textures/close.png");
+    public static final ResourceLocation RECENT = new ResourceLocation(Emoji.MODID, "textures/recent.png");
 
     private ITextField textField;
     private int rows, cols;
@@ -32,44 +34,68 @@ public class EmojiWidget {
     private int width, height;
     private Minecraft minecraft;
     private List<String> emojis;
+    private List<String> recentEmojis;
     private HoverArea bar;
     private HoverArea close;
+    private HoverArea history;
     private int scrollbarWidth;
     private int scrollbarHeight;
     private int offset;
     private boolean grabbed;
     private double grabX, grabY;
     private Runnable onClose;
+    private boolean recent;
 
-    public EmojiWidget(ITextField textField, int rows, int cols, Runnable onClose) {
+    public EmojiWidget(ITextField textField, Runnable onClose) {
         this.textField = textField;
         this.minecraft = Minecraft.getInstance();
         this.fontSize = minecraft.font.lineHeight;
         this.squareSize = fontSize + 2;
         this.posX = 0;
         this.posY = 0;
-        this.rows = rows;
-        this.cols = cols;
+        this.rows = Emoji.CLIENT_CONFIG.rows.get();
+        this.cols = Emoji.CLIENT_CONFIG.columns.get();
         this.onClose = onClose;
         this.scrollbarWidth = 2;
         this.scrollbarHeight = squareSize;
         this.width = 1 + cols * (squareSize + 1) + scrollbarWidth;
         this.bar = new HoverArea(0, 0, width, 8);
         this.close = new HoverArea(width - 8, 0, 8, 8);
+        this.history = new HoverArea(0, 0, 8, 8);
         this.height = bar.getHeight() + 1 + rows * (squareSize + 1);
+        this.recent = Emoji.CLIENT_CONFIG.recent.get();
 
         List<GlyphProvider> providers = ((IFontSet) getFontSet()).getProviders();
-
         emojis = providers
                 .stream()
                 .flatMap(listContainer -> listContainer.getSupportedGlyphs().stream())
                 .filter(integer -> integer > 1_000_000)
-                .map(Character::toString).collect(Collectors.toList());
+                .map(Character::toString)
+                .collect(Collectors.toList());
+        updateRecentList();
+    }
+
+    private void updateRecentList() {
+        List<GlyphProvider> providers = ((IFontSet) getFontSet()).getProviders();
+        recentEmojis = EmojiHistory
+                .getRecentlyUsed()
+                .stream()
+                .filter(c -> providers.stream().anyMatch(provider -> provider.getSupportedGlyphs().stream().anyMatch(i -> i.equals(c))))
+                .map(Character::toString)
+                .collect(Collectors.toList());
     }
 
     public void setPos(int x, int y) {
         this.posX = x;
         this.posY = y;
+    }
+
+    public List<String> getCurrentList() {
+        if (recent) {
+            return recentEmojis;
+        } else {
+            return emojis;
+        }
     }
 
     public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
@@ -104,10 +130,18 @@ public class EmojiWidget {
         } else {
             Screen.blit(poseStack, posX + close.getPosX(), posY + close.getPosY(), 0, 0, 8, 8, 16, 16);
         }
+
+        RenderSystem.setShaderTexture(0, RECENT);
+        if (history.isHovered(posX, posY, mouseX, mouseY)) {
+            Screen.blit(poseStack, posX + history.getPosX(), posY + history.getPosY(), 8, recent ? 8 : 0, 8, 8, 16, 16);
+        } else {
+            Screen.blit(poseStack, posX + history.getPosX(), posY + history.getPosY(), 0, recent ? 8 : 0, 8, 8, 16, 16);
+        }
     }
 
     @Nullable
     public String getVisibleEmoji(int i) {
+        List<String> emojis = getCurrentList();
         if (i < 0 || offset * cols + i >= emojis.size() || i >= rows * cols) {
             return null;
         }
@@ -115,16 +149,26 @@ public class EmojiWidget {
     }
 
     public int getVisibleEmojiCount() {
-        return Math.max(Math.min(emojis.size() - offset * cols, rows * cols), 0);
+        return Math.max(Math.min(getCurrentList().size() - offset * cols, rows * cols), 0);
     }
 
     public int getTotalRowCount() {
+        List<String> emojis = getCurrentList();
         return (emojis.size() / cols) + (emojis.size() % cols == 0 ? 0 : 1);
     }
 
     public boolean mouseClicked(double x, double y, int button) {
         if (close.isHovered(posX, posY, (int) x, (int) y)) {
             onClose.run();
+            return true;
+        }
+
+        if (history.isHovered(posX, posY, (int) x, (int) y)) {
+            updateRecentList();
+            offset = 0;
+            recent = !recent;
+            Emoji.CLIENT_CONFIG.recent.set(recent);
+            Emoji.CLIENT_CONFIG.recent.save();
             return true;
         }
 
@@ -146,6 +190,7 @@ public class EmojiWidget {
             if (isHovered(slotX, slotY, squareSize, squareSize, (int) x, (int) y)) {
                 if (textField.canEdit()) {
                     textField.addText(emoji);
+                    EmojiHistory.onTypeEmoji(Character.codePointAt(emoji, 0));
                     return true;
                 }
                 break;

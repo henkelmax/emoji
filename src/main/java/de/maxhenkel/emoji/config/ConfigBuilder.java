@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ConfigBuilder {
 
@@ -51,6 +52,14 @@ public class ConfigBuilder {
 
     public ConfigEntry<String> stringEntry(String key, String def) {
         StringConfigEntry entry = new StringConfigEntry();
+        entry.key = key;
+        entry.def = def;
+        entries.add(entry);
+        return entry;
+    }
+
+    public ConfigEntry<List<Integer>> integerListEntry(String key, List<Integer> def) {
+        IntegerListConfigEntry entry = new IntegerListConfigEntry();
         entry.key = key;
         entry.def = def;
         entries.add(entry);
@@ -211,6 +220,27 @@ public class ConfigBuilder {
         @Override
         public String serialize(Enum val) {
             return val.name();
+        }
+    }
+
+    private static class IntegerListConfigEntry extends ConfigEntry<List<Integer>> {
+        @Override
+        @Nullable
+        public List<Integer> deserialize(String str) {
+            List<Integer> list = new ArrayList<>();
+            String[] split = str.split(",");
+            for (String n : split) {
+                try {
+                    list.add(Integer.parseInt(n));
+                } catch (NumberFormatException e) {
+                }
+            }
+            return list;
+        }
+
+        @Override
+        public String serialize(List<Integer> val) {
+            return val.stream().map(String::valueOf).collect(Collectors.joining(","));
         }
     }
 

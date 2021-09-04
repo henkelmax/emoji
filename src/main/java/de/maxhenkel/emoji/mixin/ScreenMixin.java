@@ -68,7 +68,7 @@ public abstract class ScreenMixin extends AbstractContainerEventHandler implemen
     }
 
     public void openWidget(ITextField textField) {
-        widget = new EmojiWidget(textField, 5, 9, () -> widget = null);
+        widget = new EmojiWidget(textField, () -> widget = null);
         int screenWidth = minecraft.getWindow().getGuiScaledWidth();
         int screenHeight = minecraft.getWindow().getGuiScaledHeight();
 
