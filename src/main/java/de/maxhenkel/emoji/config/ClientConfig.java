@@ -1,6 +1,6 @@
 package de.maxhenkel.emoji.config;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClientConfig {
@@ -12,7 +12,7 @@ public class ClientConfig {
     public final ConfigBuilder.ConfigEntry<Integer> historySize;
 
     public ClientConfig(ConfigBuilder builder) {
-        recentEmojis = builder.integerListEntry("recent_emojis", Collections.emptyList());
+        recentEmojis = builder.integerListEntry("recent_emojis", new ArrayList<>());
         recent = builder.booleanEntry("recent", false);
         rows = builder.integerEntry("rows", 5, 3, 64);
         columns = builder.integerEntry("columns", 9, 3, 64);
