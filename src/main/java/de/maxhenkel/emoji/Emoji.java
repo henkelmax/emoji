@@ -1,7 +1,7 @@
 package de.maxhenkel.emoji;
 
+import de.maxhenkel.configbuilder.ConfigBuilder;
 import de.maxhenkel.emoji.config.ClientConfig;
-import de.maxhenkel.emoji.config.ConfigBuilder;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

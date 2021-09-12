@@ -1,5 +1,7 @@
 package de.maxhenkel.emoji.config;
 
+import de.maxhenkel.configbuilder.ConfigBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 
