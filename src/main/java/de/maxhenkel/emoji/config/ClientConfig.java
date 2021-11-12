@@ -1,17 +1,18 @@
 package de.maxhenkel.emoji.config;
 
 import de.maxhenkel.configbuilder.ConfigBuilder;
+import de.maxhenkel.configbuilder.ConfigEntry;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClientConfig {
 
-    public final ConfigBuilder.ConfigEntry<List<Integer>> recentEmojis;
-    public final ConfigBuilder.ConfigEntry<Boolean> recent;
-    public final ConfigBuilder.ConfigEntry<Integer> rows;
-    public final ConfigBuilder.ConfigEntry<Integer> columns;
-    public final ConfigBuilder.ConfigEntry<Integer> historySize;
+    public final ConfigEntry<List<Integer>> recentEmojis;
+    public final ConfigEntry<Boolean> recent;
+    public final ConfigEntry<Integer> rows;
+    public final ConfigEntry<Integer> columns;
+    public final ConfigEntry<Integer> historySize;
 
     public ClientConfig(ConfigBuilder builder) {
         recentEmojis = builder.integerListEntry("recent_emojis", new ArrayList<>());

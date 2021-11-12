@@ -1,5 +1,5 @@
 plugins {
-    id "fabric-loom" version "0.8-SNAPSHOT"
+    id "fabric-loom" version "0.10-SNAPSHOT"
     id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
@@ -10,8 +10,8 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
-minecraft{
-    accessWidener =  file("src/main/resources/emoji.accesswidener")
+loom {
+    accessWidenerPath = file("src/main/resources/emoji.accesswidener")
 }
 
 repositories {
@@ -36,8 +36,8 @@ dependencies {
 
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
-    implementation 'de.maxhenkel.configbuilder:configbuilder:1.0.0'
-    shadow 'de.maxhenkel.configbuilder:configbuilder:1.0.0'
+    implementation "de.maxhenkel.configbuilder:configbuilder:${configbuilder_version}"
+    shadow "de.maxhenkel.configbuilder:configbuilder:${configbuilder_version}"
 }
 
 processResources {
