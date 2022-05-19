@@ -271,7 +271,8 @@ public class EmojiWidget {
 
     public static void fill(PoseStack poseStack, int posX, int posY, int width, int height, float red, float green, float blue, float alpha) {
         Matrix4f matrix4f = poseStack.last().pose();
-        BufferBuilder builder = Tesselator.getInstance().getBuilder();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder builder = tesselator.getBuilder();
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
@@ -281,8 +282,7 @@ public class EmojiWidget {
         builder.vertex(matrix4f, (float) posX + width, (float) posY + height, 0.0F).color(red, green, blue, alpha).endVertex();
         builder.vertex(matrix4f, (float) posX + width, (float) posY, 0.0F).color(red, green, blue, alpha).endVertex();
         builder.vertex(matrix4f, (float) posX, (float) posY, 0.0F).color(red, green, blue, alpha).endVertex();
-        builder.end();
-        BufferUploader.end(builder);
+        tesselator.end();
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
