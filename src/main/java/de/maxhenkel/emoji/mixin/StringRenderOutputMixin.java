@@ -48,7 +48,7 @@ public class StringRenderOutputMixin {
         }
         IFont font = ((IFont) Minecraft.getInstance().font);
         FontSet fontSet = font.get(style.getFont());
-        GlyphInfo glyphInfo = fontSet.getGlyphInfo(character);
+        GlyphInfo glyphInfo = fontSet.getGlyphInfo(character, false);
         BakedGlyph bakedGlyph = fontSet.getGlyph(character);
 
         VertexConsumer vertexConsumer = bufferSource.getBuffer(bakedGlyph.renderType(mode));
